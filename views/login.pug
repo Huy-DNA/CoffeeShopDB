@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h1 Login
+    form(action='/login' method='post')
+        label(for='username') Username
+        input(id='username' name='username')
+        label(for='password') Password 
+        input(id='password' type='password' name='password')
+        button(type='submit') Login
+    if didLoginFail 
+        p Wrong username or password. Try again!

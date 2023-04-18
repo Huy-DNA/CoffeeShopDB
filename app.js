@@ -1,14 +1,16 @@
 require('dotenv').config({path: './.env'})
-const {DateTime} = require('luxon')
+const { DateTime } = require('luxon')
 
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/login');
+var logoutRouter = require('./routes/logout')
 
 var app = express();
 
@@ -21,9 +23,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ resave: false, 
+                  saveUninitialized: false,
+                  secret: process.env.SESSION_SECRET
+                }))
+  
+app.use((req, res, next) => {
+  if (req.session.user || 
+      req.path === '/login' ||
+      req.path === '/logout') {
+    next()
+  }
+  else {
+    res.redirect('/login')
+  }
+})
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
