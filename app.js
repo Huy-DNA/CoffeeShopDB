@@ -30,16 +30,16 @@ app.use(session({ resave: false,
                   secret: process.env.SESSION_SECRET
                 }))
   
-// app.use((req, res, next) => {
-//   if (req.session.user || 
-//       req.path === '/login' ||
-//       req.path === '/logout') {
-//     next()
-//   }
-//   else {
-//     res.redirect('/login')
-//   }
-// })
+app.use((req, res, next) => {
+  if (req.session.user || 
+      req.path === '/login' ||
+      req.path === '/logout') {
+    next()
+  }
+  else {
+    res.redirect('/login')
+  }
+})
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
