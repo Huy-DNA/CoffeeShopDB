@@ -8,6 +8,13 @@ a {
   color: #00B7FF;
 }
 
+table {
+  table-layout: fixed;
+  width: min(400px, 90vw);
+  border-collapse: collapse;
+  border: 3px solid black;
+}
+
 form div {
   display: grid;
   grid-template-columns: 1fr 4fr;
