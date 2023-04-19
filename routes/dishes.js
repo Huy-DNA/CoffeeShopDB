@@ -3,7 +3,7 @@ var router = express.Router();
 var model = require('../model/model');
 
 router.get('/', function (req, res, next) {
-    
+     
 })
 
 router.get('/add', function (req, res, next) {
