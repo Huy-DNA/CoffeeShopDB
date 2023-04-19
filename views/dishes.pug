@@ -2,10 +2,12 @@ extends layouts/default
 
 block content
     h1 Dishes 
+    a(href='/dishes/add') Add dish
     ul.dish-list
         each dish in dishList
             li.dish-elem
-                div.dish-thumbnail
-                    img(src=dish.url)
-                p #{dish.name}
-                p Group: #{dish.group}
+                a(href=`/dishes/${dish.id}`).dish-link
+                    div.dish-thumbnail
+                        img(src=dish.url)
+                    p #{dish.name}
+                    p Group: #{dish.group}
