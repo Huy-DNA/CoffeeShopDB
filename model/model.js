@@ -21,7 +21,7 @@ const config = {
 }
 
 class Query {
-    #from = ''
+    #from = []
     #select = []
     #where = []
     #orderby = []
@@ -57,7 +57,14 @@ class Query {
         const sanitizedValue = this.sanitize(value)
 
         const newWhere = [...this.#where]
-        newWhere.push([attribute, op, sanitizedValue])
+        newWhere.push([attribute, op, `'${sanitizedValue}'`])
+
+        return new Query(this.#from, this.#select, newWhere, this.#orderby)
+    }
+
+    whereAttribute(attribute1, op, attribute2) {
+        const newWhere = [...this.#where]
+        newWhere.push([attribute1, op, attribute2])
 
         return new Query(this.#from, this.#select, newWhere, this.#orderby)
     }
@@ -68,10 +75,10 @@ class Query {
 
     constructQuery() {
         let query = `SELECT ${this.#select.join(',')}
-                     FROM ${this.#from}
+                     FROM ${this.#from.join(',')}
                      `
         if (this.#where.length !== 0)
-            query += `WHERE ${this.#where.map(triple => `${triple[0]} ${triple[1]} '${triple[2]}'`)
+            query += `WHERE ${this.#where.map(triple => `${triple[0]} ${triple[1]} ${triple[2]}`)
                                          .join(' AND ')}
                      `
         if (this.#orderby.length !== 0)
@@ -89,7 +96,7 @@ class Query {
         const entries = Object.entries(value)
         const sanitizedEntries = entries.map(entry => [entry[0], this.sanitize(entry[1])])
 
-        return `INSERT INTO ${this.#from} (${sanitizedEntries.map(entry => entry[0]).join(',')}) VALUES
+        return `INSERT INTO ${this.#from[0]} (${sanitizedEntries.map(entry => entry[0]).join(',')}) VALUES
                     (${sanitizedEntries.map(entry => `'${entry[1]}'`).join(',')})`
     }
 
