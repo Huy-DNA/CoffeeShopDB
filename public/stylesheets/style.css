@@ -1,8 +1,23 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
 }
 
 a {
   color: #00B7FF;
+}
+
+form div {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  gap: 10px
+}
+
+form label {
+  justify-self: right;
+}
+
+form input {
+  justify-self: left;
 }
