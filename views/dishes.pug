@@ -1,0 +1,11 @@
+extends layouts/default
+
+block content
+    h1 Dishes 
+    ul.dish-list
+        each dish in dishList
+            li.dish-elem
+                div.dish-thumbnail
+                    img(src=dish.url)
+                p #{dish.name}
+                p Group: #{dish.group}
