@@ -2,17 +2,22 @@ extend layouts/default
 
 block content 
     h1 Revenue statistics
-    form(action='/revenuestat' method='get')
-        label(for='year') Enter year
-        input(id='year' name='year' type='number' min='2000' max='2100' step='1' value=defaultYear)
-        button(type='submit') Submit
-    table
-        thead
-            tr
-                th Month
-                th Total revenue 
-        tbody 
-            each monthRevenue in yearRevenue
-                tr 
-                    td #{monthRevenue.month}
-                    td #{monthRevenue.total_revenue}
+    .revenue-stat
+        form(action='/revenuestat' method='get')
+            label(for='year') Enter year:
+            input(id='year' name='year' type='number' min='2000' max='2100' step='1' value=defaultYear)
+            button(type='submit') Submit
+
+        if yearRevenue.length === 0
+            p.warning Enter year
+        else
+            table
+                thead
+                    tr
+                        th Month
+                        th Total revenue 
+                tbody
+                    each monthRevenue in yearRevenue
+                        tr 
+                            td #{monthRevenue.month}
+                            td #{monthRevenue.total_revenue}

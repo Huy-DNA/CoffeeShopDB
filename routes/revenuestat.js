@@ -21,7 +21,7 @@ router.get('/', async function (req, res, next) {
         for (let monthRevenue of rawYearRevenue)
             yearRevenue[monthRevenue.month - 1].total_revenue = monthRevenue.total_revenue
 
-        res.render('revenuestat', { yearRevenue, defaultYear: year })
+        res.render('revenuestat', { yearRevenue: yearRevenue, defaultYear: year })
     }
     else {
         res.render('revenuestat', { yearRevenue: [], defaultYear: DateTime.now().year })

@@ -2,12 +2,14 @@ extends layouts/default
 
 block content
     h1 Login
-    form(action='/login' method='post')
-        div
-            label(for='username') Username
-            input(id='username' name='username')
-            label(for='password') Password 
-            input(id='password' type='password' name='password')
-        button(type='submit') Login
-    if didLoginFail 
-        p Wrong username or password. Try again!
+    .login-form
+        form(action='/login' method='post')
+            div
+                label(for='username') Username
+                input(id='username' name='username')
+                label(for='password') Password 
+                input(id='password' type='password' name='password')
+                span
+                button(type='submit') Login
+        if didLoginFail 
+            p.warning Wrong username or password. Try again!
