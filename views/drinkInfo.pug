@@ -1,0 +1,10 @@
+extends layouts/default
+
+block content
+    ul.drink-list
+        li.drink-elem
+                div.drink-thumbnail
+                    img(src=mergedDrinkInfo.url)
+                p Name: #{mergedDrinkInfo.name}
+                p Group: #{mergedDrinkInfo.group}
+                p Price: #{mergedDrinkInfo.price}            

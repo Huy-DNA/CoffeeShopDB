@@ -72,6 +72,8 @@ class Query {
     orderby(attributes) {
         return new Query(this.#from, this.#select, this.#where, attributes)
     }
+    
+        
 
     constructQuery() {
         let query = `SELECT ${this.#select.join(',')}

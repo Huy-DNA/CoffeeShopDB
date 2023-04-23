@@ -13,6 +13,8 @@
     "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
     "luxon": "^3.3.0",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "morgan": "~1.9.1",
     "mssql": "^9.1.1",
     "pug": "2.0.0-beta11"
