@@ -1,125 +1,205 @@
 var express = require("express");
 var router = express.Router();
 var model = require('../model/model');
+
 router.get('/', async function (req, res, next) {
-    const tmp = await model.from(['Dish D', 'DishGroup G'])
-                           .whereAttribute('D.group_id', '=', 'G.id')
-                           .select(['D.name', 'G.name', 'D.url', 'D.id'])
-                           .query()
-    const dishList = tmp.map(e => ({
-        name: e.name[0],
-        group: e.name[1],
-        url: e.url,
-        id: e.id,
-    }))
-    res.render('dishes', { dishList })
+    if (req.query.q === undefined) {
+        const tmp = await model.from(['Dish D', 'DishGroup G'])
+                               .whereAttribute('D.group_id', '=', 'G.id')
+                               .select(['D.name', 'G.name', 'D.url', 'D.id'])
+                               .query()
+        const dishList = tmp.map(e => ({
+            name: e.name[0],
+            group: e.name[1],
+            url: e.url,
+            id: e.id,
+        }))
+        res.render('dishes', { dishList })
+    }
+    else {
+        const tmp = await model.from(['Dish D', 'DishGroup G'])
+                               .whereAttribute('D.group_id', '=', 'G.id')
+                               .whereValue('D.name', 'LIKE', `%${req.query.q}%`)
+                               .select(['D.name', 'G.name', 'D.url', 'D.id'])
+                               .query()
+        const dishList = tmp.map(e => ({
+            name: e.name[0],
+            group: e.name[1],
+            url: e.url,
+            id: e.id,
+        }))
+        res.render('dishes', { dishList })
+    }
 })
 
-router.get("/add", async function (req, res, next) {
-    const tmp = await model.from(["DishGroup"]).select(["name", "id"]).query();
-    const group_dishes = tmp.map((e) => ({
-        name: e.name,
-        id: e.id,
-    }));
+router.get('/add', function (req, res, next) {
+    const type = req.query.type
 
-    res.render("dishform", { group_dishes });
+    if (type === 'food') {
+        res.redirect("/dishes/add/food")
+    }
+    else if (type === 'drink') {
+        res.redirect("/dishes/add/drink")
+    }
+    else
+        res.render("dishform/prompt", {})
 });
 
-router.post("/add", async function (req, res, next) {
-    res.redirect("/dishes");
-    var {
-        id,
-        name,
-        url,
-        group_id,
-        dtype,
-        fprice,
-        fstart,
-        fend,
-        dsize,
-        dprice,
-    } = req.body;
-    console.log(req.body);
-});
+router.get('/add/food', async function (req, res, next) {
+    const dishGroup = await model.from(['DishGroup'])
+                                 .select(['name', 'id'])
+                                 .query()
+    
+    res.render("dishform/foodForm", { dishGroup })
+})
 
-router.get("/:dishId", function (req, res, next) {});
+router.post('/add/food', async function (req, res, next) {
+    console.log(req.body)
 
-router.get('/:id', async function (req, res, next) {
-const { id } = req.params;
-const temp = await model.from(['Dish D','DishGroup G','Food F','FoodServe FS'])
-                            .whereAttribute('D.group_id','=','G.id')
-                            .whereAttribute('F.id','=','D.id')
-                            .whereAttribute('F.id','=','FS.food_id')
-                            .whereValue('D.id', '=', id)
-                            .select(['D.name','G.name','D.url','D.id','F.price','FS.start_serve','FS.end_serve'])
-                            .query()    
-
-const dishInfo= temp.map(e=>({
-    name: e.name[0],
-    group: e.name[1],
-    url: e.url,
-    id: e.id,
-    price: e.price,
-    start: e.start_serve,
-    end: e.end_serve,
-}))
-if (dishInfo.length > 0) {
-    let mergedDishInfo = {
-      name: dishInfo[0].name,
-      group: dishInfo[0].group,
-      url: dishInfo[0].url,
-      id: dishInfo[0].id,
-      price: dishInfo[0].price,
-      duration: ""
-    };
-    for (let i = 0; i < dishInfo.length; i++) {
-      const start = dishInfo[i].start.toISOString().substring(11, 16);
-      const end = dishInfo[i].end.toISOString().substring(11, 16);
-      mergedDishInfo.duration += start + " - " + end;
-      if (i !== dishInfo.length - 1) {
-        mergedDishInfo.duration += ", "; // add comma separator for all elements except the last one
-      }
+    try {
+        await model.from(['Dish'])
+                .insert({
+                        id: req.body.id,
+                        group_id: req.body.group_id,
+                        url: req.body.url,
+                        name: req.body.name,
+                })
+        
+        await model.from(['Food'])
+                .insert({
+                        id: req.body.id,
+                        price: req.body.price,
+                })
+        
+        if (typeof req.body.start_serve === "object" && typeof req.body.end_serve === "object")
+            for (let i = 0; i < req.body.start_serve.length; ++i)
+                await model.from(['FoodServe'])
+                        .insert({
+                                food_id: req.body.id,
+                                start_serve: req.body.start_serve[i],
+                                end_serve: req.body.end_serve[i],
+                            })
+        else await model.from(['FoodServe'])
+                        .insert({
+                            food_id: req.body.id,
+                            start_serve: req.body.start_serve,
+                            end_serve: req.body.end_serve,
+                        })
+        
+        res.redirect('/dishes')
     }
-     // replace dishInfo array with the merged object
-     res.render('dishInfo',{mergedDishInfo})
-  }
-  ///////drink
-  const temp1 = await model.from(['Dish D','DishGroup G','Drink dr','DrinkSize ds'])
-                            .whereAttribute('D.group_id','=','G.id')
-                            .whereAttribute('dr.id','=','D.id')
-                            .whereAttribute('ds.drink_id','=','D.id')
-                            .whereValue('D.id', '=', id)
-                            .select(['D.name','G.name','D.url','D.id','ds.price','ds.size'])
-                            .query()    
-
-const drinkInfo= temp1.map(e=>({
-    name: e.name[0],
-    group: e.name[1],
-    url: e.url,
-    id: e.id,
-    price: e.price,
-    size: e.size,
-}))
-if (drinkInfo.length > 0) {
-    let mergedDrinkInfo = {
-      name: drinkInfo[0].name,
-      group: drinkInfo[0].group,
-      url: drinkInfo[0].url,
-      id: drinkInfo[0].id,
-      price: "",
-    };
-    for (let i = 0; i < drinkInfo.length; i++) {
-      const size = drinkInfo[i].size;
-      const price = drinkInfo[i].price;
-      mergedDrinkInfo.price += size + " : " + price;
-      if (i !== drinkInfo.length - 1) {
-        mergedDrinkInfo.price += ", "; // add comma separator for all elements except the last one
-      }
+    catch (e) {
+        next(e)
     }
     
-    
-    res.render('drinkInfo',{mergedDrinkInfo})
-  }
+})
+
+router.get('/add/drink', async function (req, res, next) {
+    const dishGroup = await model.from(['DishGroup'])
+                                 .select(['name', 'id'])
+                                 .query()
+
+    res.render("dishform/drinkForm", { dishGroup })
+})
+
+router.post('/add/drink', async function (req, res, next) {
+    console.log(req.body)
+
+    try {
+        await model.from(['Dish'])
+                .insert({
+                        id: req.body.id,
+                        group_id: req.body.group_id,
+                        url: req.body.url,
+                        name: req.body.name,
+                })
+        
+        await model.from(['Drink'])
+                .insert({
+                        id: req.body.id,
+                })
+        
+        if (typeof req.body.price === "object" && typeof req.body.size === "object")
+            for (let i = 0; i < req.body.size.length; ++i)
+                await model.from(['DrinkSize'])
+                        .insert({
+                                drink_id: req.body.id,
+                                size: req.body.size[i],
+                                price: req.body.price[i],
+                        })
+        else await model.from(['DrinkSize'])
+                        .insert({
+                            drink_id: req.body.id,
+                            size: req.body.size,
+                            price: req.body.price,
+                        })
+        
+        res.redirect('/dishes')
+    }
+    catch (e) {
+        next(e)
+    }
+})
+
+router.get('/:dishId', async function (req, res, next) {
+    const { dishId } = req.params;
+
+    if (dishId.match(/^F\d{4}$/)) {
+        const tmp_1 = await model.from(['Dish D', 'DishGroup G', 'Food F'])
+                                 .whereAttribute('D.group_id', '=', 'G.id')
+                                 .whereAttribute('F.id', '=', 'D.id')
+                                 .whereValue('D.id', '=', dishId)
+                                 .select(['D.name', 'G.name', 'D.url', 'D.id', 'F.price'])
+                                 .query()
+        
+        const tmp_2 = await model.from(['FoodServe F'])
+                                 .whereValue('F.food_id', '=', dishId)
+                                 .select(['*'])
+                                 .query()
+        
+        if (tmp_1.length === 0)
+            return next("No dish found!")
+        
+        const foodInfo = {
+            name: tmp_1[0].name[0],
+            group: tmp_1[0].name[1],
+            url: tmp_1[0].url,
+            id: tmp_1[0].id,
+            price: tmp_1[0].price,
+            startServe: tmp_2.map(e => e.start_serve.toISOString().substring(11, 16)),
+            endServe: tmp_2.map(e => e.end_serve.toISOString().substring(11, 16)),
+        }
+        
+        res.render('dish/foodInfo', { foodInfo })
+    }
+    else if (dishId.match(/^D\d{4}$/)) {
+        const tmp_1 = await model.from(['Dish D', 'DishGroup G'])
+                                 .whereAttribute('D.group_id', '=', 'G.id')
+                                 .whereValue('D.id', '=', dishId)
+                                 .select(['D.name', 'G.name', 'D.url', 'D.id'])
+                                 .query()
+                                 
+        const tmp_2 = await model.from(['DrinkSize D'])
+                                 .whereValue('D.drink_id', '=', dishId)
+                                 .select(['*'])
+                                 .query()
+
+        if (tmp_1.length === 0)
+            return next("No dish found!")
+
+        const drinkInfo = {
+            name: tmp_1[0].name[0],
+            group: tmp_1[0].name[1],
+            url: tmp_1[0].url,
+            id: tmp_1[0].id,
+            price: tmp_2.map(e => e.price),
+            size: tmp_2.map(e => e.size),
+        }
+
+        res.render('dish/drinkInfo', { drinkInfo })
+    }
+    else 
+        return next("No dish found!")
 })
 
 module.exports = router;

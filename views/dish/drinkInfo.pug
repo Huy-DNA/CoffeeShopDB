@@ -1,0 +1,11 @@
+extends ../layouts/default
+
+block content
+    div.dish-thumbnail
+        img(src=drinkInfo.url)
+    p Name: #{drinkInfo.name}
+    p Group: #{drinkInfo.group}
+    p Price:
+    ul
+        - for (let i = 0; i < drinkInfo.price.length; ++i)
+            li #{drinkInfo.size[i]}: #{drinkInfo.price[i]}

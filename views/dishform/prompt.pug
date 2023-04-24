@@ -1,0 +1,12 @@
+extends ../layouts/default 
+
+block content
+    form(method='get' action='/dishes/add')
+        input(type='radio' value='food' id='dish-type-food' name='type' checked)
+        label(for='dish-type-food') food
+
+        input(type='radio' value='drink' id='dish-type-drink' name='type')
+        label(for='dish-type-drink') drink
+
+        input(type='submit' value='Proceed')
+

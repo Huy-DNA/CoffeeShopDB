@@ -1,7 +1,13 @@
 extends layouts/default
 block content
-    h1 Dishe 
+    h1 Dishes 
     a(href='/dishes/add') Add dish
+
+    form(action='/dishes' method='get')
+        label(for='dish-search-box') Search
+        input(id='dish-search-box' type='search' name='q')
+        input(type='submit' value='Search')
+        
     ul.dish-list
         each dish in dishList 
             li.dish-elem

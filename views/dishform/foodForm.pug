@@ -1,0 +1,97 @@
+extends ../layouts/default 
+
+block content
+    form(id="insert-food" action='/dishes/add/food' method='post')
+        .form-group 
+            label(for='dish-group') Group
+            select(id='dish-group' form="insert-food" name='group_id' required)
+                each group in dishGroup
+                    option(value=group.id) #{group.name}
+
+        .form-group
+            label(for='food-id') ID
+            input(id='food-id' name='id' pattern='F[0-9]{4}' required)
+
+        .form-group
+            label(for='food-name') Name
+            input(id='food-name' name='name' required)
+
+        .form-group
+            label(for='food-thumbnail-url') URL
+            input(id='food-thumbnail-url' name='url' type='url' required)
+
+        .form-group
+            label(for='food-price') Price
+            input(id='food-price' name='price' type='number' step=1000 min=0)
+        
+        #form-extensible
+            .form-group
+                label(for='food-start-0') Start serve
+                input(id='food-start-0' type='time' name='start_serve' required)
+            
+                label(for='food-end-0') End serve
+                input(id='food-end-0' type='time' name='end_serve' required)
+        
+        button#add-button +
+        button#minus-button(disabled) -
+
+        input(type='submit' value='submit')
+
+    script. 
+        var i = 1
+        var formExtensible = document.getElementById('form-extensible')
+
+        let addButton = document.getElementById('add-button')
+        let minusButton = document.getElementById('minus-button')
+
+        addButton.addEventListener('click', e => {
+            e.preventDefault()
+            const formGroup = document.createElement('div')
+            formGroup.classList.add('form-group')
+
+            const startServeLabel = document.createElement('label')
+            startServeLabel.textContent = 'Start serve'
+            startServeLabel.setAttribute('for', `food-start-${i}`)
+
+            const startServeInput = document.createElement('input')
+            startServeInput.id = `food-start-${i}`
+            startServeInput.setAttribute('name', 'start_serve')
+            startServeInput.setAttribute('type', 'time')
+            startServeInput.setAttribute('required', true)
+
+            const endServeLabel = document.createElement('label')
+            endServeLabel.textContent = 'End serve'
+            endServeLabel.setAttribute('for', `food-end-${i}`)
+
+            const endServeInput = document.createElement('input')
+            endServeInput.id = `food-end-${i}`
+            endServeInput.setAttribute('name', 'end_serve')
+            endServeInput.setAttribute('type', 'time')
+            endServeInput.setAttribute('required', true)
+
+            formGroup.appendChild(startServeLabel)
+            formGroup.appendChild(startServeInput)
+            formGroup.appendChild(endServeLabel)
+            formGroup.appendChild(endServeInput)
+
+            formExtensible.appendChild(formGroup)
+
+            ++i
+
+            minusButton.removeAttribute('disabled')
+        })
+
+        minusButton.addEventListener('click', e => {
+            if (i === 1)
+                return
+            
+            e.preventDefault()
+
+            formExtensible.removeChild(formExtensible.lastChild)
+
+            --i
+
+            if (i === 1)
+                minusButton.setAttribute('disabled', true)
+
+        })
