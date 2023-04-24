@@ -1,7 +1,7 @@
 extends ../layouts/default 
 
 block content
-    form(id="insert-food" action='/dishes/add/food' method='post')
+    form(id="insert-food" action='/dishes/add/food' method='post').add-dish-form
         .form-group 
             label(for='dish-group') Group
             select(id='dish-group' form="insert-food" name='group_id' required)
@@ -25,15 +25,13 @@ block content
             input(id='food-price' name='price' type='number' step=1000 min=0)
         
         #form-extensible
+            p Serving schedule <button id='add-button'> + </button> <button id='minus-button' disabled> - </button>
             .form-group
-                label(for='food-start-0') Start serve
+                label(for='food-start-0') From
                 input(id='food-start-0' type='time' name='start_serve' required)
             
-                label(for='food-end-0') End serve
-                input(id='food-end-0' type='time' name='end_serve' required)
-        
-        button#add-button +
-        button#minus-button(disabled) -
+                label(for='food-end-0') To
+                input(id='food-end-0' type='time' name='end_serve' required) 
 
         input(type='submit' value='submit')
 
@@ -50,7 +48,7 @@ block content
             formGroup.classList.add('form-group')
 
             const startServeLabel = document.createElement('label')
-            startServeLabel.textContent = 'Start serve'
+            startServeLabel.textContent = 'From'
             startServeLabel.setAttribute('for', `food-start-${i}`)
 
             const startServeInput = document.createElement('input')
@@ -60,7 +58,7 @@ block content
             startServeInput.setAttribute('required', true)
 
             const endServeLabel = document.createElement('label')
-            endServeLabel.textContent = 'End serve'
+            endServeLabel.textContent = 'To'
             endServeLabel.setAttribute('for', `food-end-${i}`)
 
             const endServeInput = document.createElement('input')

@@ -1,7 +1,7 @@
 extends ../layouts/default 
 
 block content 
-    form(id="insert-drink" action='/dishes/add/drink' method='post')
+    form(id="insert-drink" action='/dishes/add/drink' method='post').add-dish-form
         .form-group
             label(for='dish-group') Group 
             select(id='dish-group' form="insert-drink" name='group_id' required)
@@ -21,6 +21,7 @@ block content
             input(id='drink-thumbnail-url' type='url' name='url' required)
 
         #form-extensible
+            p Size & Price <button id='add-button'> + </button> <button id='minus-button' disabled> - </button>
             .form-group 
                 label(for='drink-size-0') Size
                 select(id='drink-size-0' name='size' required)
@@ -30,9 +31,6 @@ block content
 
                 label(for='drink-price-0') Price
                 input(id='drink-price-0' type='number' step=1000 min=0 name='price' required)
-            
-        button#add-button +
-        button#minus-button(disabled) -
 
         input(type='submit' value='submit')
     

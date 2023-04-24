@@ -1,7 +1,8 @@
 extends ../layouts/default 
 
 block content
-    form(method='get' action='/dishes/add')
+    p Insert food or drink?
+    form(method='get' action='/dishes/add').prompt
         input(type='radio' value='food' id='dish-type-food' name='type' checked)
         label(for='dish-type-food') food
 

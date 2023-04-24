@@ -1,11 +1,17 @@
 extends ../layouts/default
 
 block content
-    div.dish-thumbnail
+    h1.dish-name #{drinkInfo.name} <span class='group-pill'> #{drinkInfo.group.toUpperCase()} </span>
+    div.dish-info-thumbnail
         img(src=drinkInfo.url)
-    p Name: #{drinkInfo.name}
-    p Group: #{drinkInfo.group}
-    p Price:
-    ul
-        - for (let i = 0; i < drinkInfo.price.length; ++i)
-            li #{drinkInfo.size[i]}: #{drinkInfo.price[i]}
+    table.price-table
+        caption Price table
+        thead 
+            tr
+                th Size 
+                th Price (VNĐ)
+        tbody
+            - for (let i = 0; i < drinkInfo.price.length; ++i)
+                tr 
+                    td #{drinkInfo.size[i]}
+                    td #{drinkInfo.price[i]}

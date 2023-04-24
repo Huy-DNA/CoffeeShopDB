@@ -1,12 +1,19 @@
 extends ../layouts/default
 
 block content
-    div.dish-thumbnail
+    h1 #{foodInfo.name} <span class='group-pill'> #{foodInfo.group.toUpperCase()} </span>
+    div.dish-info-thumbnail
         img(src=foodInfo.url)
-    p Name: #{foodInfo.name}
-    p Group: #{foodInfo.group}
-    p Price: #{foodInfo.price}
-    p Serve time:
-    ul
-        - for (let i = 0; i < foodInfo.startServe.length; ++i)
-            li #{foodInfo.startServe[i]} - #{foodInfo.endServe[i]}
+    p Price: #{foodInfo.price} VNĐ
+    
+    table.serve-schedule
+        caption Serve schedule
+            thead 
+                tr 
+                    th Start serve
+                    th End serve
+            tbody
+                - for (let i = 0; i < foodInfo.startServe.length; ++i)
+                    tr 
+                        td #{foodInfo.startServe[i]}
+                        td #{foodInfo.endServe[i]}

@@ -1,18 +1,17 @@
 extends layouts/default
 block content
-    h1 Dishes 
-    a(href='/dishes/add') Add dish
+    h1 Dishes <a href='/dishes/add' class='add-dish-button'> Add dish </a>
 
-    form(action='/dishes' method='get')
-        label(for='dish-search-box') Search
-        input(id='dish-search-box' type='search' name='q')
-        input(type='submit' value='Search')
-        
+    .search-box
+        form(action='/dishes' method='get')
+            label(for='dish-search-box') Search
+            input(id='dish-search-box' type='search' name='q')
+            input(type='submit' value='Go')
+
     ul.dish-list
         each dish in dishList 
             li.dish-elem
                 a(href=`/dishes/${dish.id}`).dish-link
                     div.dish-thumbnail
                         img(src=dish.url)
-                    p #{dish.name}
-                    p Group: #{dish.group}
+                    p #{dish.name} <span class='group-pill'> #{dish.group.toUpperCase()} </span>
